@@ -2,124 +2,56 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMover : MonoBehaviour
+public class ThirdPersonMovement : MonoBehaviour
 {
-    Vector2 pub_rotation = Vector2.zero;
-    [Range(0.5f, 10.0f)]
-    public float cameraSpeed = 2f;
-    [Range(0.5f, 100.0f)]
-    public float moveSpeed = 2f;
+    public CharacterController controller;
+    public Transform cam;
 
-    private bool noLook = false;
-    private Rigidbody body;
+    public float speed = 6f;
 
-    public float headMinY = -40f; // ограничение угла для головы
-    public float headMaxY = 40f;
+    public float turnSmoothTime = 0.1f;
+    private float turnSmoothVelocity;
+
+    private Animator ch_animator;
+
+    private AudioSource stepAudio;
+
     void Start()
     {
-        // Cursor.visible = false;//jjjj
-        body = GetComponent<Rigidbody>();
-        body.freezeRotation = true;
+        ch_animator = GetComponent<Animator>();
+        stepAudio = GetComponent<AudioSource>();
     }
+    
+    // Update is called once per frame
     void Update()
     {
-        //ForceCollide();
-        MouseLook();
-        EventKeys();
-    }
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
 
-    void EventKeys()
-    {
-        if (Input.GetKeyDown(KeyCode.W))
-            StartCoroutine(nameof(Forward));
+        if (horizontal != 0 || vertical != 0)ch_animator.SetBool("state", true);
+        else ch_animator.SetBool("state", false);
 
-        if (Input.GetKeyDown(KeyCode.S))
-            StartCoroutine(nameof(Back));
+        Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
 
-        if (Input.GetKeyDown(KeyCode.A))
-            StartCoroutine(nameof(Left));
-
-        if (Input.GetKeyDown(KeyCode.D))
-            StartCoroutine(nameof(Right));
-
-        if (Input.GetKeyDown(KeyCode.Space))
-            StartCoroutine(nameof(Space));
-
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-            LShift();
-
-        if (Input.GetKeyUp(KeyCode.LeftShift))
-            moveSpeed = 2.5f;
-    }
-
-    IEnumerator Forward()
-    {
-        for (; ; )
+        if (direction.magnitude >= 0.1f)
         {
-            if (Input.GetKeyUp(KeyCode.W))
-                break;
-            transform.position += transform.forward * moveSpeed * Time.deltaTime;
-            yield return null;
-        }
-    }
-    IEnumerator Back()
-    {
-        for (; ; )
-        {
-            if (Input.GetKeyUp(KeyCode.S))
-                break;
-            transform.position -= transform.forward * moveSpeed * Time.deltaTime;
-            yield return null;
-        }
-    }
-    IEnumerator Left()
-    {
-        for (; ; )
-        {
-            if (Input.GetKeyUp(KeyCode.A))
-                break;
-            Vector3 forward = new Vector3(transform.forward.x, transform.forward.y, transform.forward.z);
-            Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);
-            Vector3 left = Vector3.Cross(forward.normalized, up.normalized);
-            transform.position += left * moveSpeed * Time.deltaTime;
-            yield return null;
-        }
-    }
-    IEnumerator Right()
-    {
-        for (; ; )
-        {
-            if (Input.GetKeyUp(KeyCode.D))
-                break;
-            Vector3 forward = new Vector3(transform.forward.x, transform.forward.y, transform.forward.z);
-            Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);
-            Vector3 right = Vector3.Cross(forward.normalized, up.normalized);
-            transform.position -= right * moveSpeed * Time.deltaTime;
-            yield return null;
-        }
-    }
-    IEnumerator Space()
-    {
-        for(int i = 0; i < 100; i++)
-        {
-            if (Input.GetKeyUp(KeyCode.Space))
-                break;
-            transform.position = new Vector3(transform.position.x, transform.position.y + (0.05f - (i * 0.0005f)), transform.position.z);
-            yield return null;
-        }
-    }
+            if (!stepAudio.isPlaying)
+            {
+                stepAudio.Play();
+            }
 
-    void LShift()
-    {
-        moveSpeed = 5f;
-    }
+            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
+            float angle = Mathf.SmoothDampAngle(transform.rotation.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+            transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
-    void MouseLook()
-    {
-        // Cursor.lockState = CursorLockMode.Locked;
-        pub_rotation.y += Input.GetAxis("Mouse X");
-        pub_rotation.x += Input.GetAxis("Mouse Y") - (Input.GetAxis("Mouse Y") * 2);
-        pub_rotation.x = Mathf.Clamp (pub_rotation.x, headMinY, headMaxY);
-        transform.eulerAngles = pub_rotation * cameraSpeed;
+            Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+            controller.Move(moveDir.normalized * speed * Time.deltaTime);
+        }
+        else
+        {
+            {
+                stepAudio.Stop();
+            }
+        }
     }
 }
