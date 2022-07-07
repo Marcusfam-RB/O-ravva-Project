@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4861335429238743080}
   - component: {fileID: 2170909944910612486}
   - component: {fileID: 4162566709134392524}
+  - component: {fileID: 5949503743493280016}
   m_Layer: 0
   m_Name: BigTile
   m_TagString: Untagged
@@ -81,3 +82,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &5949503743493280016
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1826373548347236797}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -4787506166417798794, guid: 3011f958640b3fa4ca6db0fe9b77f004, type: 3}
