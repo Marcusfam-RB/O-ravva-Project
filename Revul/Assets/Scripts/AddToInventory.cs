@@ -6,14 +6,14 @@ using UnityEngine.UI;
 
 public class AddToInventory : MonoBehaviour
 {
-    public GameObject button;
+    public GameObject img;
     public Sprite spr;
     public bool isInCollider = false;
     
 
     private void Update()
     {
-        OnTriggerStay(this.GetComponent<Collider>());
+        OnTriggerStay(GetComponent<Collider>());
     }
 
     private void OnTriggerEnter(Collider other)
@@ -28,10 +28,10 @@ public class AddToInventory : MonoBehaviour
 
     private void OnTriggerStay(Collider other )
     {
-        if (Input.GetKeyDown(KeyCode.F) &  isInCollider == true)
+        if (Input.GetKeyDown(KeyCode.F) & isInCollider == true)
         {
             this.gameObject.SetActive(false);
-            button.GetComponent<Image>().sprite = spr;          
+            img.GetComponent<Image>().sprite = spr;          
             
         }
     }

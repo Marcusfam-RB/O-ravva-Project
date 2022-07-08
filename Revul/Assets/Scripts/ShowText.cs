@@ -6,24 +6,24 @@ using UnityEngine.UI;
 
 public class ShowText : MonoBehaviour
 {
-    public GameObject text;
+    public GameObject textInf;
     public Text txt;
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Player")
-            text.SetActive(true);
+            textInf.SetActive(true);
             txt.text = " Нажмите F, что бы подобрать предмет ";
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (other.tag == "Player")
-            text.SetActive(false);
+            textInf.SetActive(false);
     }
 
     private void OnDisable()
     {
-        if (text != null)
-            text.SetActive(false);
+        if (textInf != null)
+            textInf.SetActive(false);
     }
 }
